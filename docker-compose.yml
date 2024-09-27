@@ -1,0 +1,32 @@
+services:
+  db:
+    image: public.ecr.aws/docker/library/mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: password
+    volumes:
+      - db:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  cms:
+    build: ./
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 4000:80
+    command: /bin/bash
+    tty: true
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+      WORDPRESS_DEBUG: true
+
+volumes:
+  db:
